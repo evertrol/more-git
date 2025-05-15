@@ -15,7 +15,7 @@ introduction workshop, but within the steps themselves).
 
 - have a working git
   - test with `git --version`
-  
+
 - know the basic commands, such as `git init`, `git add`, `git commit`.
 
 - have your git config set up with a name, possible email and your
@@ -42,55 +42,38 @@ introduction workshop, but within the steps themselves).
 
   For shell, bash or zsh are advised (bash is the default on most
   Linux distributions, while zsh is the default on macOS).
-  
+
 ## Part 0: setup
 
 _Your collaborators thought it would be a good thing that their
 project has a frequently asked questions (FAQ) page for people using
-it, and they've asked you to add some questions with answers. You have
-just forked the main project repsitory to your local GitHub account,
-and then cloned it onto your local machine. There is a file with a
-single question, `faq.txt`, as a starting point._
+it, and they've asked you to start with some examples questions and
+answers. You want to do this properly, so you create a Git repository
+locally and start working_
 
+- On your local machine, in a suitable directory (e.g.,
+  `~/workshops/`), create a new empty repository `faq` and move to it:
 
-- on GitHub, fork from `antonpannekoek/git-advanced`
+  ```
+  git init faq
+  cd faq
+  ```
 
-- create or cd to a good base directory, e.g. `$HOME/workshops`, on your
-  local machine
+- Create a new file called `faq.txt` and add the following text:
 
-- Clone your fork of the repository to this base directory: `git clone
-  git@github.com/<your-user-name>/git-advanced`.
+  ```
+  What is your favorite color?
 
-  This uses the ssh variant, not the https variant; you can see this
-  from the use of `git@github.com` at the start.
+  Blue!
+  ```
 
-  You can find the correct URL under the green "Code" button on
-  GitHub, and then under the "SSH" tab.
+  Use the same spelling as here, and make sure there is an empty line
+  between the question and answer. Also, avoid spaces at the end of
+  the lines, and ensure there is a single newline at the end of
+  "Blue!"  (that is, a single <enter>, but not an empty line).
 
-- cd to your local copy of the repository: `cd git-advanced`.
-
-Note: The directory on your system does not need to be named the same
-as the repository, but it's standard and practical to do so.
-
-
-### Non-GitHub setup
-
-If you don't yet have your GitHub account set up, you can follow along
-for the first part (branches, merging and merge conflicts) locally, by
-creating a new repository and adding a single file, `faq.txt`, and add
-the text below:
-
-```
-What is your favorite color?
-
-Blue!
-```
-
-Save the file, and commit it to your local repository with a commit
-message such as "Set up an initial F.A.Q.". For the later parts, you
-will need a working GitHub account.
-
-
+- Save the file, and commit itf to the local repository with a commit
+  message such as "Set up an initial F.A.Q.".
 
 
 
@@ -128,9 +111,9 @@ convenience.)
 
 ### Making a change on a branch
 
-_You realise all text in the main project is in British-English, and
-the FAQ should follow suit. You create a branch to fix the
-spelling._
+_You realise that your audience will mainly be used to
+British-English, and the FAQ should follow suit. You create a branch
+to fix the spelling._
 
 Create a branch and switch to it
 ```
@@ -772,25 +755,58 @@ starting point. Beware: this (resetting a branch) is not something
 you'll often (want to) do; here, it's mainly out of convenience to get
 back to a clean starting point of the `main` branch.
 
+We first have to find out what the hash is of the first commit. Run
 ```
-git switch main
-git reset --hard origin/main
+git switch main  # ensure we're on the right branch
+git log --oneline
+```
+and note the 7-hexadecimal digit number of the first commit, the commit hash. Copy this, then verify you're indeed still on the main branch, then reset the branch with:
+
+```
+git reset --hard <commit hash>
 git log
+git branch
+git branch --merged
 ```
 
-(`git reset --hard` may lose work, so try and avoid it in general.)
+(`git reset --hard` may lose work, so try and avoid it in general. Here it is really only used as a convenience.)
 
-The last `git log` should show only the barebones `faq.txt`: an empty
+
+That last `git log` should show only the barebones `faq.txt`: an empty
 file. And `git branch --merged` will show neither of the two branches
 are merged.
 
-### Pushing branches to GitHub
-
-First, we'll check whether our local repository knows about our fork
-on GitHub:
+More importantly, the two branches themselves are still preserved,
+with their commits. For example, check
 
 ```
-git remote -v  # explain what we see
+git log --oneline fix-spelling
+
+git log --oneline clarify-qa
+```
+
+
+### Pushing branches to GitHub
+
+First, we'll need to create an empty repository on GitHub. Log in to GitHub, click the plus symbol on the top right, then select "New repository". You are now presented with a small form, that requires at least a repository name. You could pick anything you like, but it should be something that makes the purpose of the repository obvious. It's often practical to have it the same name as the directory in which you created the repository on your local machine. so try `faq` as a simple name. GitHub checks if it's available (there are no conflicting repositories with the same name).
+
+The other parts are all optional.
+
+In particular, since we already have a repository, we don't initialize
+this repository on the GitHub side with anything (even though we don't
+have a README or license file ourselves; normally, you should have one
+or add one to your local repository).
+
+Once you're happy with all details (basically, the name), click
+"Create". Now you can follow the bottom instructions on GitHub, "…or
+push an existing repository from the command line".
+
+Copy the first line (`git remote add ...`), then go to the commandline
+and paste the line. The repository now will have a so-called "remote":
+a link to another repository. We can see this with
+
+```
+git remote -v
 ```
 
 This will show two lines referencing our fork on GitHub: one for fetch
@@ -801,13 +817,31 @@ your local "online" repository (whether on GitHub, GitLab or another
 remote system): it's the default reference name for anything you
 cloned, as we did at the start (`git clone git@github.com/....`).
 
-Switch to the `fix-spelling` branch:
+We'll then *push* our starting point of our main branch, where we are currently, to GitHub:
+
+```
+git push origin main
+```
+
+This *pushes* the local changes to the 'origin' remote. If we had
+other remotes, we could push the changes to those as well, provided we
+have write access (we obviously have this for our own GitHub account).
+
+Switch back to GitHub, and see that our repository is uploaded, with
+our 'faq.txt' file. You can click on the file to see its contents. Go
+back to the repository by clicking "Code" on the top left.
+
+If you click on the "Branch" fold-out button (left-most button
+directly under the repository's name), you'll only see the main
+branch. Let's change that.
+
+Back on the commandline, switch to the `fix-spelling` branch:
 
 ```
 git switch fix-spelling
 ```
 
-Now, we'll *push* this onto the "origin" remote:
+Now, we'll *push* this onto the "origin" remote too:
 
 ```
 git push origin fix-spelling
@@ -815,23 +849,20 @@ git push origin fix-spelling
 
 This pushes the current branch to the "origin" server (i.e., GitHub),
 onto a branch called `fix-spelling`. For good practice, keep the
-branch name on both sides the same, as not to confuse anyone.
+branch name on both sides the same, as not to confuse anyone
+(including yourself).
 
-If you now navigate to the GitHub fork in your browser, you'll see the
-new branch. Actually, you'll probably see a large banner with a green
-background suggesting to make a "pull request". Ignore this banner for
-now.
-
-Instead, check out the list of branches in the central menu (i.e., not
-the one at the top, but just below the repository title). You should
-see a `main` branch and a `fix-spelling` branch.
+If you now navigate to the GitHub fork in your browser, you'll also
+see the new branch. Actually, you'll probably see a large banner with
+a green background suggesting to make a "pull request". Ignore this
+banner for now.
 
 If you find the second menu item, "2 Branches", you can see both
 branches, subdivided in a few categories. Notably, you can see that
 `fix-spelling` is 1 commit ahead of `main`, which is indeed what we
 expect.
 
-Back to the terminal, to push the other branch:
+Go back to the terminal, and push the other branch:
 
 ```
 git switch clarify-qa
@@ -840,6 +871,11 @@ git push origin clarify-qa
 
 On GitHub, you'll see the new branch in your list of
 branches. `clarify-qa` has two commits.
+
+By the way, note the convenience of having reset the main branch, but
+not the other branches. We can do the same thing as before, that is,
+merge branches into main, without having to do any editing. This time,
+we'll do the merging on the GitHub side of things.
 
 
 ### Updating `main` on GitHub
@@ -935,17 +971,23 @@ will take a few seconds, only then to realise that there is a
 conflict.
 
 GitHub suggest a web editor to fix the conflict, but we'll do it
-locally on our own machine.
+locally on our own machine. Particularly, you may have merge conflicts
+for branches in repositories where you don't have editing rights, so
+you can't fix that on GitHub. We have to modify the branch on our
+local machine to ensure there is no conflict even *before* we attempt
+the merge.
 
 
 
 #### Updating our local branches
 
-Go back to your local machine. We'll want to update our local main, to
-keep tracking the GitHub main.
+Go back to your local machine. First, we'll want to update our local
+main, to keep tracking the GitHub main.
 
 Note: we don't work on main (i.e., create new commits), but we can
-(and likely want) to keep main up to date with our remote.
+(and likely want) to keep main up to date with our remote. In that
+sense, the `remote` is our "source of truth", and our branches, pull
+requests and mergees are suggestions to change the truth.
 
 ```
 git switch main
@@ -959,6 +1001,20 @@ important part: it merges the changes from the `main` branch on the
 `origin` remote into the current branch. Note that without the `git
 fetch main`, nothing happens, since our local Git won't get informed
 about changes on the `origin` remote.
+
+Beware of the slightly different syntax between `rebase` and `push`:
+```
+git push origin main
+```
+versus
+```
+git rebase origin/main
+```
+
+The difference is that "origin main" means: "<remote> <branch>", while
+"origin/main" means "<branch>", with the branch being on the remote
+(but we can refer to it, thanks to the "link" to the remote we have).
+
 
 You can now run the usual status checks:
 ```
@@ -976,7 +1032,7 @@ created when we merged `clarify-qa` into `main`.
 
 What is up with the `rebase` command though? It is very similar to a
 `merge` command, but every so slightly different. In particular, it
-tries to avoid creating an additional merge commit. 
+tries to avoid creating an additional merge commit.
 
 Rebasing is sometimes preferred over merge for updating local branches
 with remote changes: it avoids additional merge commits. Merge commits
@@ -1225,119 +1281,158 @@ there are comments to a pull request.)
 
 ## Part 3: synchronizing with upstream and submitting a pull request
 
-To start, we'll add a reference to the original repository as a new remote:
+
+For this section, we won't be able to reuse our current
+repository. Instead, we'll start from another repository, that we will
+be making changes to, by submitting so-called pull requests.
+
+Find the `https://github.com/antonapannekoek/advanced-git` repository
+on GitHub. Find the "Fork" button, somewhat to the right, on the same
+line as the repository's name. Click "Fork", and accept the defaults
+on the next screen, by clicking the green "Create fork" button.
+
+You will now be redirected to your own GitHub account (check the URL),
+with a "fork" (a copy that knows about the original repository). Under
+the repository title, it should show "forked from
+antonpannekoek/git-advanced".
+
+We don't make any changes here: we still need a copy on our local machine. Click the green "Code" button, then select the "SSH" tab, and copy the URL.
+
+Now go to the terminal, move one directory up, out of your current repository, and use `git clone` with the copied URL:
+
+```
+git clone git@github.com:<your-username>/advanced-git.git
+```
+
+We'll now have the repository locally as well. It is in a directory named 'advanced-git', so change to it:
+
+```
+cd advanced-git
+```
+
+Note that if you happened to have a directory named advanced-git, you
+run into a problem. But you can provide another directory name after
+`git clone` if wanted: `git clone git@github.com:<your-username>/advanced-git.git some-directory-name`
+
+
+Check out this local "clone" of the repository:
+
+```
+git status
+git branch
+git remote -v
+```
+
+The last command shows a reference to our GitHub fork, but no
+reference to the original repository. We'll need that as well, since
+that repository now serves as our "source of truth".
+
+To add the reference, use the following:
 
 ```
 git remote add upstream https://github.com/antonapannekoek/advanced-git.git
 git remote -v
 ```
 
-(To find the URL, you can go to your fork on GitHub, and on the main
-page find the original URL just under the title of the
-repository. Follow that link, then click the green "Code" button, and
-this time, copy the URL from the "https" tab.)
-
 The name of the remote is upstream. This is the standard name used to
 refer to the original repository, which is the actual reference on
-which your repository is based. The URL uses https here, which is more
-common for a read-only repository. `git remote -v` shows "(push)"
-access to the upstream repository, but this won't work unless you have
-admin rights.
+which your repository is based. The URL uses https here instead of
+`git@github...`, which is more common for a read-only repository. `git
+remote -v` shows "(push)" access to the upstream repository, but this
+won't work unless you have admin rights.
 
 This "upstream" remote is now our "ultimate" source of truth, in
 particular its `main` branch: we should always bring our branches
 up-to-date with upstream if we are making changes.
 
 
-### A few cheats to get back to our starting point
+We could have cloned the upstream repository directly, but since we
+can't push to it, we'll some intermediate to perform pull
+requests. Our fork on GitHub is that intermediate, as we'll see
+shortly.
 
-We should also bring our own repository, both the fork on GitHub and
-the repository on our local machine, back to a more pristine state,
-without any merges. Again, we cheat somewhat.
+### Redoing our edits
 
-We'll first reset main to its starting point. We can't do that on
-GitHub, so we do that locally again, then force-push to origin/main,
-so that both our local and origin `main` branches are reset.
-
-We can't use origin/main to reset to, since that is updated to the
-most recent commit. Instead, we'll reset to `upstream/main`, since
-that is now our source of truth. And we still have that very first
-commit in common with upstream, as you can see with `git log
---oneline`, for example.
+We'll have to make the changes to the `faq.txt` file again. Let's do one at the time, starting with the spelling. Create a new `fix-spelling` branch and switch to it, edit the file to change to British-English spelling, commit it with a suitable message, then push the branch to the "origin" remote on GitHub:
 
 ```
-git switch main
-git log --oneline
-```
-
-If you see `(upstream/main)` listed with the first commit, you can
-reset to this:
-
-
-```
-git reset --hard upstream/main
-git log  # check that we only have the original, one commit
-git push origin main --force  # update our GitHub fork as well
-```
-
-Normally, we wouldn't work on main this way (no push, only
-pull/fetch), so this is a convenience exception for this tutorial!
-
-The `clarify-qa` branch is still good, but the `fix-spelling` branch
-is more problematic to reset: there are a few commits in between the
-original commit and the spelling-change commit. So here, we restore to
-the original commit, then just manually add the spelling-change commit
-back:
-
-```
-git reset --hard origin/main  # can use origin/main now, since it has been reset
-# Edit the file and change the spelling
-git add -u .
+git switch -c fix-spelling
+<edit faq.txt and change the spelling>
+git add -u faq.txt
 git commit -m"Change to British-English spelling"
-git push origin fix-spelling --force
+git push origin fix-spelling
 ```
-
-We now like to merge our changes on the two branches into the original
-repository.
 
 ### Create the pull requests
 
-Since we ignored the pull request pop-up on GitHub, now navigate to
-our branches, find the `clarify-qa` branch, and click the ellipses
-("..."); select "New pull request", and ensure that the base
-repository to merge into is now "antonpannekoek/advanced-git". This is
-the default, so you don't have to change that.
+If we now go to GitHub again to view the newly pushed branch, we see the green "pull request" banner again. This time, we can use it!
 
-Create the pull request.
+If, however, you don't immediately perform a pull request, the pop-up will disappear after some time. Instead of clicking "Compare & pull request" button here, we do it in a more general way.
+
+Go to "# branches" (second menu item in the main section), find your
+new branch, then click the ellipses (...), and select "New pull
+request" (which has the same effect as clicking the green "Compare &
+pull request" button).
+
+The following screen has a lot of information:
+
+- you can change the name of your pull request. It is the title of a commit if there is only 1 commit in a branch, or the name of the branch if there are more commits. You can change the name as you like, since it won't show in the final result. It should really be a descriptive name for the maintainers of the original repository, so that they understand what this pull request is about.
+
+  For our example, we can leave the title as is.
+
+- you can add more explanation in the description box if needed.
+
+- above the title box, you can see where you are sending your pull
+  request to, and where it is coming from. Normally, the defaults are
+  correct.
+
+- Below the description box are the commits in this pull request, that is, all the commits on this branch.
+
+- Below that are the changes shown, per file (if you changed more files).
+
+So this is a good review place, if everything looks correct. If that is indeed the case, click the "Create pull request" button under the description box.
+
+To note: this is a *request*: you are not suddently merging changes into the original repository. So if you had made a mistake, it is still up to the owners and maintainers of the original repository to verify the pull request looks ok and is useful.
+
+Once you have clicked "Create pull request", you are automatically
+switched to the original repository (check the URL). The "Pull
+requests" tab at the top is highlighted, and the tabs in the main
+section allow you (and others) to see the commits, changes and files
+involved. The first tab, "Conversation", can be the most
+important. Your description, if any, will be here, but here other
+people (with a GitHub account) can comment on your pull request, point
+out mistakes, give suggestions, etc.
 
 From this point on, there is not much you can do: the admins of the
 upstream repository will get a notification, and they may merge your
 pull requeset.
 
-They may also add comments, asking for a few changes, or perhaps
-something you overlooked. Sometimes, you can have a long discussion
-with multiple people joining, and you may have to update your pull
-request multiple times before it is merged; hopefully all for (the)
-better (code)!
 
-In the meantime, navigate back to your own repository (notice how
-during the creation of a pull request, the url in your browser
-switches you over to the upstream repository. Always pay attention
-which repository you are working on).
+In the meantime, we'll do the Q&A clarification update. Go back to the
+terminal, back to the main branch (don't start from the spelling
+change; use the original file), create the clarify-qa branch, edit the
+'faq.txt' to add the "Q:" and "A:" parts, and commit the change. If
+you like, you can add a second commit to change just the colour (keep
+it on the clarify-qa branch, as before, even though it doesn't really
+fit there).
 
-Find the list of branches and create a new pull request for
-`fix-spelling` as well; you can have multiple PRs at the same time,
-not a problem, as long as they are from different branches. This time,
-there is no conflict, since the other branch has not yet been
-merged. Check out the "pull requests" tab in the upstream repository,
-to see both pull requests showing a green, unmerged symbol.
+```
+git switch main
+git switch -c clarify-qa
+<edit faq.txt>
+git add faq.txt
+git commit -m"Clarify the question and answer parts"
+<anything else>
+git push origin clarify-qa
+```
 
-For some variety, the admins will merge the `fix-spelling` branch
-first. The "pull requests" page now shows 1 open and 1 closed pull
-request (under their own tabs). If we navigate to the open pull
-request (just click the name), GitHub updates the page, and it shows a
-conflict. It is the same problem as we had before, just somewhat
-inverted.
+On GitHub, navigate to your fork of the repository again, and create
+the new pull request. But now you'll see there is a problem: because
+the maintainers have merged the previous pull request, your clarify-qa
+branch is behind the upstream repository, and your merge request can't
+be automatically merged. This is the same merge conflict we have seen
+before, and we can solve it in a similar matter.
+
 
 ### Fixing the conflict
 
@@ -1492,7 +1587,7 @@ Now you can do the usual steps:
 - Commit the change (there is no need to edit the file),
 
   `git commit -m "Make the F.A.Q. easier to notice"
-  
+
 - Update with possible change from upstream/main,
 
   `git pull --rebase`
@@ -1553,5 +1648,3 @@ Overall, the AstroPy documentation for contributions is very
 extensive, including non-Git related things such as style conventions,
 testing usage etc. While perhaps extensive, worth a read if you are
 (going to) contribute to a large project.
-
-
